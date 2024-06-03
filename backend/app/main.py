@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pymongo import MongoClient
+from .routes import router as task_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -13,6 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(task_router)
 
 client = MongoClient("MONGODB_URI")
 db = client['task-manager']
