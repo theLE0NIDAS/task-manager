@@ -1,20 +1,30 @@
 <template>
-  <div id="app">
-    <TaskManager />
+  <div class="container">
+    <h1>Task Manager</h1>
+    <task-form @taskCreated="fetchTasks" />
+    <task-list ref="taskList" />
   </div>
 </template>
 
 <script>
-import TaskManager from './components/TaskManager.vue';
+import TaskForm from "./components/TaskForm.vue";
+import TaskList from "./components/TaskList.vue";
 
 export default {
-  name: 'App',
   components: {
-    TaskManager,
+    TaskForm,
+    TaskList
   },
+  methods: {
+    fetchTasks() {
+      this.$refs.taskList.fetchTasks();
+    }
+  }
 };
 </script>
 
-<style>
-/* You can add your global styles here */
+<style scoped>
+.container {
+  padding: 20px;
+}
 </style>
