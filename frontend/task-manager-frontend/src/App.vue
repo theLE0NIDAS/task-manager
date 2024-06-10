@@ -1,3 +1,4 @@
+<!--
 <template>
   <div class="container">
     <h1>Task Manager</h1>
@@ -26,5 +27,45 @@ export default {
 <style scoped>
 .container {
   padding: 20px;
+}
+</style>
+-->
+
+
+<template>
+  <div class="container">
+    <nav>
+      <RouterLink to="/">Task Manager</RouterLink > |
+      <RouterLink to="/dependent-tasks">Manage Dependent Tasks</RouterLink >
+    </nav>
+    <RouterView />
+  </div>
+</template>
+
+<script>
+export default {
+  components: {
+    // No need to directly import components here since we're using router-view
+  },
+};
+</script>
+
+<style scoped>
+.container {
+  padding: 20px;
+}
+
+nav {
+  margin-bottom: 20px;
+}
+
+nav a {
+  margin-right: 10px;
+  text-decoration: none;
+  color: #007bff;
+}
+
+nav a:hover {
+  text-decoration: underline;
 }
 </style>

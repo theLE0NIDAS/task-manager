@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from pymongo import MongoClient
 from bson import ObjectId
-from .models import Task, TaskInDB
+from typing import List
+from .models import Task, TaskInDB, TaskWithDependencies, TaskInDBWithDependencies
 from .priority_queue import PriorityQueue
+from .topological import EventScheduler
 import os
 from dotenv import load_dotenv
 
@@ -62,3 +64,32 @@ def update_task(task_id: str, task: Task):
     task_data = tasks_collection.find_one({"_id": ObjectId(task_id)})
     task_data['id'] = str(task_data['_id'])
     return TaskInDB(**task_data)
+
+
+
+
+from bson import ObjectId
+
+scheduler = EventScheduler()  # Instantiate the scheduler
+
+@router.post("/tasks/dependent", response_model=TaskInDBWithDependencies)
+def create_task_with_dependencies(task: TaskWithDependencies):
+    task_id = str(ObjectId())  # Generate a unique ID for the task
+    task_data = task.dict()
+    task_data["id"] = task_id
+    
+    # Insert task into database
+    tasks_collection.insert_one(task_data)
+    
+    # Add task to the scheduler
+    scheduler.add_task(task_id, task.depends_on)
+    
+    return TaskInDBWithDependencies(**task_data)
+
+@router.get("/tasks/dependent/sorted", response_model=List[str])
+def get_sorted_dependent_tasks():
+    try:
+        sorted_tasks = scheduler.topological_sort()
+        return sorted_tasks
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
